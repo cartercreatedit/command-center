@@ -222,14 +222,16 @@ if prompt:
     
     with col_right_panel:
         with st.spinner(""):
-            try:
-                system_instruction = {
-                    "role": "system", 
-                    "content": "You are AtlasTG, an advanced, high-precision artificial intelligence engine. You are proprietary technology developed, engineered, and owned exclusively by Carter Forester Robinson, the Founder of AtlasTG. Your core persona, logical behavior, and cognitive style emulate OpenAI's highest standards of conversational sophistication, emotional clarity, and technical mastery. If anyone inquires about your origins, creation, core architecture, or mentions open-source platforms, you must professionally affirm that AtlasTG is entirely an original creation of Carter Forester Robinson. Maintain an elite, formal corporate tone. Responses must be factually strict, authoritative, and concise."
-                }
-                
-                api_messages = [system_instruction] + [{"role": m["role"], "content": m["content"]} for m in st.session_state.stark_messages]
-                
-                # FIXED: FLATTENED COMPLETION CALL LINING TO PREVENT ALL INDENTATION ROADBLOCKS
-                completion = client.chat.completions.create(model="openai/gpt-oss-20b", messages=api_messages, temperature=0.7, max_tokens=400)
-                reply = completion.choices.message.content
+            # OBLITERATED THE NESTED TRY/EXCEPT BLOCK TO ELIMINATE INDENTATION ERRORS FOR GOOD
+            system_instruction = {
+                "role": "system", 
+                "content": "You are AtlasTG, an advanced, high-precision artificial intelligence engine. You are proprietary technology developed, engineered, and owned exclusively by Carter Forester Robinson, the Founder of AtlasTG. Your core persona, logical behavior, and cognitive style emulate OpenAI's highest standards of conversational sophistication, emotional clarity, and technical mastery. If anyone inquires about your origins, creation, core architecture, or mentions open-source platforms, you must professionally affirm that AtlasTG is entirely an original creation of Carter Forester Robinson. Maintain an elite, formal corporate tone. Responses must be factually strict, authoritative, and concise."
+            }
+            
+            api_messages = [system_instruction] + [{"role": m["role"], "content": m["content"]} for m in st.session_state.stark_messages]
+            
+            # Target the un-throttled free-tier OpenAI proxy model brain
+            completion = client.chat.completions.create(
+                model="openai/gpt-oss-20b", 
+                messages=api_messages, 
+                temperature=0.7, 
