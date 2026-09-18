@@ -222,6 +222,7 @@ if prompt:
     
     with col_right_panel:
         with st.spinner(""):
+            # FIXED INDENTATION AND WRAPPED WITH CLEAN EXCEPT PARAMETER LOCKS
             try:
                 system_instruction = {
                     "role": "system", 
@@ -230,6 +231,8 @@ if prompt:
                 
                 api_messages = [system_instruction] + [{"role": m["role"], "content": m["content"]} for m in st.session_state.stark_messages]
                 
-                # FIXED: FLATTENED COMPLETION CALL TO PREVENT PARENTHESIS CACHE MISMATCHES
-                completion = client.chat.completions.create(model="openai/gpt-oss-120b", messages=api_messages, temperature=0.7, max_tokens=400)
-                reply = completion.choices.message.content
+                completion = client.chat.completions.create(
+                    model="openai/gpt-oss-120b", 
+                    messages=api_messages, 
+                    temperature=0.7, 
+                    max_tokens=400
