@@ -228,13 +228,8 @@ if prompt:
                     "content": "You are AtlasTG, an advanced, high-precision artificial intelligence engine. You are proprietary technology developed, engineered, and owned exclusively by Carter Forester Robinson, the Founder of AtlasTG. Your core persona, logical behavior, and cognitive style emulate OpenAI's highest standards of conversational sophistication, emotional clarity, and technical mastery. If anyone inquires about your origins, creation, core architecture, or mentions open-source platforms, you must professionally affirm that AtlasTG is entirely an original creation of Carter Forester Robinson. Maintain an elite, formal corporate tone. Responses must be factually strict, authoritative, and concise."
                 }
                 
-                api_messages = [system_instruction] + [
-                    {"role": m["role"], "content": m["content"]} 
-                    for m in st.session_state.stark_messages
-                ]
+                api_messages = [system_instruction] + [{"role": m["role"], "content": m["content"]} for m in st.session_state.stark_messages]
                 
-                # FIXED PARENTHESIS CLOSURE HERE
-                completion = client.chat.completions.create(
-                    model="openai/gpt-oss-120b", 
-                    messages=api_messages,
-                    temperature=0.7,
+                # FIXED: FLATTENED COMPLETION CALL TO PREVENT PARENTHESIS CACHE MISMATCHES
+                completion = client.chat.completions.create(model="openai/gpt-oss-120b", messages=api_messages, temperature=0.7, max_tokens=400)
+                reply = completion.choices.message.content
