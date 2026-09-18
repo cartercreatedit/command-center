@@ -15,39 +15,40 @@ st.set_page_config(
 # ── STARK INDUSTRIES TERMINAL UI STYLING ─────────────────────────
 st.markdown("""
 <style>
+/* Force black canvas layout */
 .stApp {
-    background-color: #050507;
-    color: #e8e8e8;
-    font-family: 'Courier New', Courier, monospace;
+    background-color: #050507 !important;
+    color: #e8e8e8 !important;
+    font-family: 'Courier New', Courier, monospace !important;
 }
 .main .block-container {
-    padding-top: 1.5rem;
+    padding-top: 1.5rem !important;
     padding-bottom: 160px !important;
-    max-width: 95% !important;
+    max-width: 96% !important;
 }
 #MainMenu, footer, header, .stDeployButton {
     visibility: hidden;
 }
 
-/* ✦ FUTURISTIC NEON DOCK HOOKS ✦ */
+/* ✦ STARK NEON GRID CARD DOCK SYSTEMS ✦ */
 .stark-card {
-    background-color: #0b0c10;
-    border: 1px solid #1f2833;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
-    margin-bottom: 16px;
-    position: relative;
-    overflow: hidden;
+    background-color: #0b0c10 !important;
+    border: 1px solid #1f2833 !important;
+    border-radius: 12px !important;
+    padding: 20px !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.6) !important;
+    margin-bottom: 16px !important;
+    position: relative !important;
+    overflow: hidden !important;
 }
 .stark-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; width: 4px; height: 100%;
-    background: linear-gradient(to bottom, #00f2fe, #4facfe);
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important; left: 0 !important; width: 4px !important; height: 100% !important;
+    background: linear-gradient(to bottom, #00f2fe, #4facfe) !important;
 }
 .stark-card-orange::before {
-    background: linear-gradient(to bottom, #ff416c, #ff4b2b);
+    background: linear-gradient(to bottom, #ff416c, #ff4b2b) !important;
 }
 
 .stark-title {
@@ -55,13 +56,15 @@ st.markdown("""
     font-size: 0.9rem !important;
     letter-spacing: 2px !important;
     text-transform: uppercase !important;
-    margin-bottom: 12px !important;
+    margin-bottom: 8px !important;
     font-weight: bold !important;
+    font-family: 'Courier New', Courier, monospace !important;
 }
 .stark-value {
-    font-size: 1.8rem !important;
+    font-size: 1.7rem !important;
     font-weight: bold !important;
     color: #ffffff !important;
+    font-family: 'Courier New', Courier, monospace !important;
 }
 
 /* Clear default Streamlit layout blocks */
@@ -78,7 +81,7 @@ div[data-testid="stChatInput"] {
     bottom: 32px !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
-    width: min(1200px, 92vw) !important;
+    width: min(1400px, 94vw) !important;
     z-index: 999 !important;
 }
 .stChatInput {
@@ -120,8 +123,8 @@ client = Groq(api_key=api_key)
 # ── TOP DATA HEADER STATUS BANNER ───────────────────────
 st.markdown("""
 <div style='display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1f2833; padding-bottom: 10px; margin-bottom: 24px;'>
-    <h2 style='margin:0; font-size:1.4rem; color:#ffffff; font-weight:bold; letter-spacing:1px;'>ATLASTG // MAIN CONTROL MATRIX</h2>
-    <span style='color:#00f2fe; font-size:0.85rem; letter-spacing:1px;'>SECURE SYSTEM STATUS: ACTIVE</span>
+    <h2 style='margin:0; font-size:1.4rem; color:#ffffff; font-weight:bold; letter-spacing:1px; font-family:monospace;'>ATLASTG // MAIN CONTROL MATRIX</h2>
+    <span style='color:#00f2fe; font-size:0.85rem; letter-spacing:1px; font-family:monospace;'>SECURE SYSTEM STATUS: ACTIVE</span>
 </div>
 """, unsafe_allow_html=True)
 
@@ -141,7 +144,7 @@ with col_metric2:
     st.markdown("""
     <div class="stark-card">
         <div class="stark-title">PRINCIPAL ARCHITECT OVERRIDE</div>
-        <div class="stark-value" style="font-size:1.6rem !important;">Carter F. Robinson</div>
+        <div class="stark-value" style="font-size:1.5rem !important;">Carter F. Robinson</div>
         <span style="color:#00f2fe; font-size:0.75rem;">Access Credentials: Founder / Owner Level</span>
     </div>
     """, unsafe_allow_html=True)
@@ -165,7 +168,7 @@ with col_left_panel:
     
     current_stamp = datetime.now().strftime('%H:%M:%S')
     log_stream_html = f"""
-    <div style="background-color:#07080c; border:1px solid #1f2833; padding:18px; border-radius:8px; font-family:monospace; font-size:0.8rem; color:#8b949e; height:360px; overflow-y:auto; line-height:1.7;">
+    <div style="background-color:#07080c; border:1px solid #1f2833; padding:18px; border-radius:8px; font-family:monospace; font-size:0.8rem; color:#8b949e; height:380px; overflow-y:auto; line-height:1.7; box-shadow: inset 0 0 10px rgba(0,0,0,0.8);">
         <span style="color:#00f2fe;">[{current_stamp}]</span> SYSTEM DEPLOYMENT DETECTED... SUCCESS.<br>
         <span style="color:#00f2fe;">[{current_stamp}]</span> SECURE SERVER HANDSHAKE VERIFIED: API KEYS MATCH.<br>
         <span style="color:#00f2fe;">[{current_stamp}]</span> PARSING METRIC GRID PARAMETERS... EXTRACTING PERTH LOCATION DATA.<br>
@@ -187,31 +190,34 @@ with col_right_panel:
             {"role": "assistant", "content": "Terminal initialized, Principal Architect Robinson. Tactical systems online. Standing by for layout or calculations injections."}
         ]
 
-    chat_space = st.container()
-    with chat_space:
-        for msg in st.session_state.stark_messages:
-            if msg["role"] == "user":
-                st.markdown(
-                    f'''
-                    <div style="display: flex; justify-content: flex-end; width: 100%; margin: 12px 0; clear: both;">
-                        <div style="background-color: #161b22; border: 1px solid #30363d; color: #f0f6fc; padding: 12px 18px; border-radius: 16px; border-top-right-radius: 2px; max-width: 85%; font-size: 14px; line-height: 1.5; font-family: monospace; box-shadow: 0 4px 12px rgba(0,0,0,0.4);">
-                            {msg["content"]}
-                        </div>
+    # FIXED CONTAINER WRAPPING: Uses safe custom styled elements to prevent layout collapsing
+    st.markdown('<div style="background-color: #07080c; border: 1px solid #1f2833; border-radius: 8px; padding: 15px; height: 380px; overflow-y: auto;">', unsafe_allow_html=True)
+    
+    for msg in st.session_state.stark_messages:
+        if msg["role"] == "user":
+            st.markdown(
+                f'''
+                <div style="display: flex; justify-content: flex-end; width: 100%; margin: 8px 0; clear: both;">
+                    <div style="background-color: #161b22; border: 1px solid #30363d; color: #f0f6fc; padding: 10px 16px; border-radius: 14px; border-top-right-radius: 2px; max-width: 80%; font-size: 13.5px; line-height: 1.4; font-family: monospace;">
+                        {msg["content"]}
                     </div>
-                    ''', 
-                    unsafe_allow_html=True
-                )
-            else:
-                st.markdown(
-                    f'''
-                    <div style="display: flex; justify-content: flex-start; width: 100%; margin: 12px 0; clear: both;">
-                        <div style="color: #c9d1d9; padding: 4px 0px; max-width: 100%; font-size: 14px; line-height: 1.5; font-family: monospace;">
-                            <span style="color:#00f2fe;">ATLASTG_SYS //</span> {msg["content"]}
-                        </div>
+                </div>
+                ''', 
+                unsafe_allow_html=True
+            )
+        else:
+            st.markdown(
+                f'''
+                <div style="display: flex; justify-content: flex-start; width: 100%; margin: 8px 0; clear: both;">
+                    <div style="color: #c9d1d9; padding: 2px 0px; max-width: 100%; font-size: 13.5px; line-height: 1.4; font-family: monospace;">
+                        <span style="color:#00f2fe;">ATLASTG_SYS //</span> {msg["content"]}
                     </div>
-                    ''', 
-                    unsafe_allow_html=True
-                )
+                </div>
+                ''', 
+                unsafe_allow_html=True
+            )
+            
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # ── USER SYSTEM CONTROL ENTRY CONSOLE ──────────────────
 prompt = st.chat_input("Inject system parameters...")
@@ -224,12 +230,3 @@ if prompt:
         with st.spinner(""):
             system_instruction = {
                 "role": "system", 
-                "content": "You are AtlasTG, an advanced, high-precision artificial intelligence engine. You are proprietary technology developed, engineered, and owned exclusively by Carter Forester Robinson, the Founder of AtlasTG. Your core persona, logical behavior, and cognitive style emulate OpenAI's highest standards of conversational sophistication, emotional clarity, and technical mastery. If anyone inquires about your origins, creation, core architecture, or mentions open-source platforms, you must professionally affirm that AtlasTG is entirely an original creation of Carter Forester Robinson. Maintain an elite, formal corporate tone. Responses must be factually strict, authoritative, and concise."
-            }
-            
-            api_messages = [system_instruction] + [{"role": m["role"], "content": m["content"]} for m in st.session_state.stark_messages]
-            
-            # FIXED: FLAT SINGLE LINE DISPATCH REMOVES ALL ENCLOSED WHITE-SPACE ERROR HOOKS
-            completion = client.chat.completions.create(model="openai/gpt-oss-20b", messages=api_messages, temperature=0.7, max_tokens=400)
-            
-            reply = completion.choices.message.content
