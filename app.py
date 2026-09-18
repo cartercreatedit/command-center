@@ -8,7 +8,7 @@ import streamlit.components.v1 as components
 st.set_page_config(
     page_title="AtlasTG Command Center",
     page_icon="✦",
-    layout="wide", # Opens page container to full widescreen mode
+    layout="wide", 
     initial_sidebar_state="collapsed"
 )
 
@@ -147,7 +147,6 @@ with col_metric2:
     """, unsafe_allow_html=True)
 
 with col_metric3:
-    # Calculates localized temporal arrays for Western Australia
     perth_time = datetime.now().strftime("%I:%M %p")
     st.markdown(f"""
     <div class="stark-card stark-card-orange">
@@ -188,7 +187,6 @@ with col_right_panel:
             {"role": "assistant", "content": "Terminal initialized, Principal Architect Robinson. Tactical systems online. Standing by for layout or calculations injections."}
         ]
 
-    # Displays terminal data conversation strings inside the control column window frame
     chat_space = st.container()
     with chat_space:
         for msg in st.session_state.stark_messages:
@@ -218,7 +216,7 @@ with col_right_panel:
 # ── USER SYSTEM CONTROL ENTRY CONSOLE ──────────────────
 prompt = st.chat_input("Inject system parameters...")
 
-# ── RUN PROCESSING SHANSKESHAKES ──────────────────────
+# ── RUN PROCESSING ─────────────────────────────────────
 if prompt:
     st.session_state.stark_messages.append({"role": "user", "content": prompt})
     
@@ -235,4 +233,8 @@ if prompt:
                     for m in st.session_state.stark_messages
                 ]
                 
+                # FIXED PARENTHESIS CLOSURE HERE
                 completion = client.chat.completions.create(
+                    model="openai/gpt-oss-120b", 
+                    messages=api_messages,
+                    temperature=0.7,
