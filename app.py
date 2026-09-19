@@ -1,73 +1,68 @@
 import streamlit as st
 from groq import Groq
 import os
-import time
-from datetime import datetime
+import base64
 import streamlit.components.v1 as components
 
 st.set_page_config(
-    page_title="AtlasTG Command Center",
+    page_title="AtlasTG",
     page_icon="✦",
-    layout="wide", 
+    layout="centered",
     initial_sidebar_state="collapsed"
 )
 
-# ── STARK INDUSTRIES TERMINAL UI STYLING ─────────────────────────
+# ── PREMIUM CLEAN COMPONENT STYLING ─────────────────────────
 st.markdown("""
 <style>
-/* Force black canvas layout */
 .stApp {
-    background-color: #050507 !important;
-    color: #e8e8e8 !important;
-    font-family: 'Courier New', Courier, monospace !important;
+    background-color: #0a0a0a;
+    color: #e8e8e8;
 }
 .main .block-container {
-    padding-top: 1.5rem !important;
+    padding-top: 5rem !important; /* Made explicit room for the sticky tab header */
     padding-bottom: 160px !important;
-    max-width: 96% !important;
+    max-width: 760px;
+    min-height: 100vh;
 }
 #MainMenu, footer, header, .stDeployButton {
     visibility: hidden;
 }
-
-/* ✦ STARK NEON GRID CARD DOCK SYSTEMS ✦ */
-.stark-card {
-    background-color: #0b0c10 !important;
-    border: 1px solid #1f2833 !important;
-    border-radius: 12px !important;
-    padding: 20px !important;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.6) !important;
-    margin-bottom: 16px !important;
-    position: relative !important;
-    overflow: hidden !important;
-}
-.stark-card::before {
-    content: '' !important;
-    position: absolute !important;
-    top: 0 !important; left: 0 !important; width: 4px !important; height: 100% !important;
-    background: linear-gradient(to bottom, #00f2fe, #4facfe) !important;
-}
-.stark-card-orange::before {
-    background: linear-gradient(to bottom, #ff416c, #ff4b2b) !important;
-}
-
-.stark-title {
-    color: #00f2fe !important;
-    font-size: 0.9rem !important;
-    letter-spacing: 2px !important;
-    text-transform: uppercase !important;
-    margin-bottom: 8px !important;
-    font-weight: bold !important;
-    font-family: 'Courier New', Courier, monospace !important;
-}
-.stark-value {
-    font-size: 1.7rem !important;
-    font-weight: bold !important;
+h1 {
     color: #ffffff !important;
-    font-family: 'Courier New', Courier, monospace !important;
+    font-weight: 500 !important;
+    font-size: 1.75rem !important;
+}
+.stCaption {
+    color: #8b8b8b !important;
+    margin-bottom: 20px !important;
 }
 
-/* Clear default Streamlit layout blocks */
+/* ✦ FIXED TOP-BAR MODE CONTAINER LOCK ✦ */
+div[data-testid="stTabs"] {
+    position: fixed !important;
+    top: 0 !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: min(760px, 92vw) !important;
+    background-color: #0a0a0a !important;
+    z-index: 1000 !important;
+    padding-top: 15px !important;
+    padding-bottom: 10px !important;
+    border-bottom: 1px solid #161616 !important;
+}
+div[data-testid="stTabs"] button {
+    color: #8b8b8b !important;
+    font-size: 0.9rem !important;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif !important;
+    background-color: transparent !important;
+    border: none !important;
+}
+div[data-testid="stTabs"] button[aria-selected="true"] {
+    color: #ffffff !important;
+    font-weight: bold !important;
+}
+
+/* Clear default Streamlit padding baggage */
 div[data-testid="stChatMessage"] {
     background-color: transparent !important;
     border: none !important;
@@ -75,31 +70,67 @@ div[data-testid="stChatMessage"] {
     padding: 0px !important;
 }
 
-/* ── STICKY CONTROL INPUT CONSOLE ── */
+/* Force clean text behavior inside all markdown elements */
+div[data-testid="stMarkdownContainer"] p {
+    color: #f1f5f9 !important;
+    font-size: 15.5px !important;
+    line-height: 1.6 !important;
+}
+
+/* ── RE-ESTABLISHED USER PROMPT POINTED BUBBLES ── */
+div[data-testid="stChatMessage"]:has([data-testid="user-avatar"]) {
+    display: flex !important;
+    justify-content: flex-end !important;
+    margin: 16px 0 !important;
+}
+div[data-testid="stChatMessage"]:has([data-testid="user-avatar"]) > div:nth-child(2) {
+    background-color: #1a1a1a !important;
+    border: 1px solid #2d2d2d !important;
+    padding: 12px 18px !important;
+    border-radius: 18px !important;
+    border-top-right-radius: 2px !important;
+    max-width: 80% !important;
+    display: inline-block !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+}
+
+/* Assistant Plain Text Layout */
+div[data-testid="stChatMessage"]:has([data-testid="assistant-avatar"]) {
+    display: flex !important;
+    justify-content: flex-start !important;
+    margin: 16px 0 !important;
+}
+div[data-testid="stChatMessage"]:has([data-testid="assistant-avatar"]) > div:nth-child(2) {
+    background-color: transparent !important;
+    border: none !important;
+    padding: 4px 0px !important;
+    box-shadow: none !important;
+    max-width: 100% !important;
+}
+
+/* ── EXACT CHATGPT TEXT BOX MATCH WITH BRIGHT WHITE OUTLINE FOCUS ── */
 div[data-testid="stChatInput"] {
     position: fixed !important;
     bottom: 32px !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
-    width: min(1400px, 94vw) !important;
+    width: min(760px, 92vw) !important;
     z-index: 999 !important;
 }
 .stChatInput {
-    background-color: #0d0e12 !important;
-    border: 1px solid #1f2833 !important;
-    border-radius: 16px !important;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.7) !important;
-}
-.stChatInput textarea {
-    color: #ffffff !important;
-    font-family: monospace !important;
+    background-color: #161616 !important;
+    border: 1px solid #2c2c2c !important;
+    border-radius: 32px !important;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.5) !important;
+    padding: 6px 12px 6px 20px !important; 
+    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
 }
 .stChatInput:focus-within {
-    border-color: #00f2fe !important;
-    box-shadow: 0 0 15px rgba(0, 242, 254, 0.2) !important;
+    border-color: #ffffff !important;
+    box-shadow: 0 0 0 1px #ffffff, 0 4px 30px rgba(255,255,255,0.05) !important;
 }
 
-/* Strip inner background border constraints */
+/* Obliterate inner background border constraints */
 div[data-testid="stChatInput"] *,
 .stChatInput div[data-baseweb="textarea"],
 .stChatInput div[data-baseweb="base-input"],
@@ -108,6 +139,20 @@ div[data-testid="stChatInput"] *,
     background-color: transparent !important;
     box-shadow: none !important;
     outline: none !important;
+}
+.stChatInput textarea {
+    color: #f4f4f4 !important;
+    font-size: 15.5px !important;
+}
+
+/* Premium Voice Recorder Container Box */
+div[data-testid="stAudioInput"] {
+    background-color: #111111 !important;
+    border: 1px solid #252525 !important;
+    border-radius: 24px !important;
+    padding: 8px !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important;
+    margin-top: 10px !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -120,113 +165,88 @@ if not api_key:
 
 client = Groq(api_key=api_key)
 
-# ── TOP DATA HEADER STATUS BANNER ───────────────────────
-st.markdown("""
-<div style='display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1f2833; padding-bottom: 10px; margin-bottom: 24px;'>
-    <h2 style='margin:0; font-size:1.4rem; color:#ffffff; font-weight:bold; letter-spacing:1px; font-family:monospace;'>ATLASTG // MAIN CONTROL MATRIX</h2>
-    <span style='color:#00f2fe; font-size:0.85rem; letter-spacing:1px; font-family:monospace;'>SECURE SYSTEM STATUS: ACTIVE</span>
-</div>
-""", unsafe_allow_html=True)
+# ── Header ────────────────────────────────────
+st.markdown("<h1>AtlasTG</h1>", unsafe_allow_html=True)
+st.caption("High-Speed Intelligence Engine · Coded by C. F. Robinson")
 
-# ── TOP DATA ROW MONITOR METRICS (3 COLUMNS) ───────────
-col_metric1, col_metric2, col_metric3 = st.columns(3)
+# ── Session state ─────────────────────────────
+if "messages" not in st.session_state:
+    st.session_state.messages = [
+        {"role": "assistant", "content": "Hey. Welcome to AtlasTG. I am fully responsive across text and audio pathways."}
+    ]
+if "play_audio" not in st.session_state:
+    st.session_state.play_audio = None
+if "last_processed_audio" not in st.session_state:
+    st.session_state.last_processed_audio = None
 
-with col_metric1:
-    st.markdown("""
-    <div class="stark-card">
-        <div class="stark-title">COMPUTE CLOUD NODE</div>
-        <div class="stark-value">Groq Tensor LPU</div>
-        <span style="color:#8b8b8b; font-size:0.75rem;">Pipeline Status: Ultra-Low Latency</span>
-    </div>
-    """, unsafe_allow_html=True)
+# ── HIDDEN AUDIO TRANSMISSION EMBED ───────────────────
+if st.session_state.play_audio:
+    st.markdown(st.session_state.play_audio, unsafe_allow_html=True)
+    st.session_state.play_audio = None 
 
-with col_metric2:
-    st.markdown("""
-    <div class="stark-card">
-        <div class="stark-title">PRINCIPAL ARCHITECT OVERRIDE</div>
-        <div class="stark-value" style="font-size:1.5rem !important;">Carter F. Robinson</div>
-        <span style="color:#00f2fe; font-size:0.75rem;">Access Credentials: Founder / Owner Level</span>
-    </div>
-    """, unsafe_allow_html=True)
-
-with col_metric3:
-    perth_time = datetime.now().strftime("%I:%M %p")
-    st.markdown(f"""
-    <div class="stark-card stark-card-orange">
-        <div class="stark-title">LOCAL RADAR HORIZON (WA)</div>
-        <div class="stark-value">{perth_time}</div>
-        <span style="color:#ff4b2b; font-size:0.75rem;">Timezone Location: Perth / Greenwood</span>
-    </div>
-    """, unsafe_allow_html=True)
-
-# ── CENTRAL PROCESSING LAYER (2 GRID WORKSPACES) ──────
-col_left_panel, col_right_panel = st.columns([0.4, 0.6], gap="medium")
-
-# LEFT WORKSPACE PANEL: Automated Diagnostic System Log Stream
-with col_left_panel:
-    st.markdown('<div class="stark-title" style="color:#ff416c;">// LIVE SYSTEM DIAGNOSTIC FEED</div>', unsafe_allow_html=True)
-    
-    current_stamp = datetime.now().strftime('%H:%M:%S')
-    log_stream_html = f"""
-    <div style="background-color:#07080c; border:1px solid #1f2833; padding:18px; border-radius:8px; font-family:monospace; font-size:0.8rem; color:#8b949e; height:380px; overflow-y:auto; line-height:1.7; box-shadow: inset 0 0 10px rgba(0,0,0,0.8);">
-        <span style="color:#00f2fe;">[{current_stamp}]</span> SYSTEM DEPLOYMENT DETECTED... SUCCESS.<br>
-        <span style="color:#00f2fe;">[{current_stamp}]</span> SECURE SERVER HANDSHAKE VERIFIED: API KEYS MATCH.<br>
-        <span style="color:#00f2fe;">[{current_stamp}]</span> PARSING METRIC GRID PARAMETERS... EXTRACTING PERTH LOCATION DATA.<br>
-        <span style="color:#ff416c;">[{current_stamp}]</span> CORE SECURITY IDENTITY LOCK ENFORCED: CARTER FORESTER ROBINSON CONFIGURED.<br>
-        <span style="color:#00f2fe;">[{current_stamp}]</span> INITIALIZING HYBRID TEXT DISPATCH ROUTERS... OK.<br>
-        <span style="color:#238636;">[ONLINE]</span> LPU COMPUTE NODES ENGAGED. INCOMING LOGIC HOOKS FULLY STABLE.<br>
-        <span style="color:#8b8b8b;">[{current_stamp}]</span> Memory allocation: 0.04% pool consumption.<br>
-        <span style="color:#8b8b8b;">[{current_stamp}]</span> Monitoring console entry port fields... Awaiting prompt parameters.
-    </div>
-    """
-    st.markdown(log_stream_html, unsafe_allow_html=True)
-
-# RIGHT WORKSPACE PANEL: Interactive Tactical Logic Handshake
-with col_right_panel:
-    st.markdown('<div class="stark-title">// CONSOLE LOGIC TIMELINE</div>', unsafe_allow_html=True)
-    
-    if "stark_messages" not in st.session_state:
-        st.session_state.stark_messages = [
-            {"role": "assistant", "content": "Terminal initialized, Principal Architect Robinson. Tactical systems online. Standing by for layout or calculations injections."}
-        ]
-
-    # FIXED CONTAINER WRAPPING: Uses safe custom styled elements to prevent layout collapsing
-    st.markdown('<div style="background-color: #07080c; border: 1px solid #1f2833; border-radius: 8px; padding: 15px; height: 380px; overflow-y: auto;">', unsafe_allow_html=True)
-    
-    for msg in st.session_state.stark_messages:
-        if msg["role"] == "user":
-            st.markdown(
-                f'''
-                <div style="display: flex; justify-content: flex-end; width: 100%; margin: 8px 0; clear: both;">
-                    <div style="background-color: #161b22; border: 1px solid #30363d; color: #f0f6fc; padding: 10px 16px; border-radius: 14px; border-top-right-radius: 2px; max-width: 80%; font-size: 13.5px; line-height: 1.4; font-family: monospace;">
-                        {msg["content"]}
-                    </div>
+# ── Render Message Timeline using Native Safe Structures ──────────────────
+for msg in st.session_state.messages:
+    if msg["role"] == "user":
+        col_spacer, col_bubble = st.columns([0.2, 0.8])
+        with col_bubble:
+            st.markdown(f'''
+            <div style="display: flex; justify-content: flex-end; width: 100%; clear: both;">
+                <div style="background-color: #1a1a1a; border: 1px solid #2d2d2d; color: #e3e3e3; padding: 12px 18px; border-radius: 18px; border-top-right-radius: 2px; font-size: 15.5px; line-height: 1.6; font-family: -apple-system, BlinkMacSystemFont, sans-serif; box-shadow: 0 4px 15px rgba(0,0,0,0.3); text-align: left; width: fit-content; max-width: 100%;">
+                    {msg["content"]}
                 </div>
-                ''', 
-                unsafe_allow_html=True
-            )
-        else:
-            st.markdown(
-                f'''
-                <div style="display: flex; justify-content: flex-start; width: 100%; margin: 8px 0; clear: both;">
-                    <div style="color: #c9d1d9; padding: 2px 0px; max-width: 100%; font-size: 13.5px; line-height: 1.4; font-family: monospace;">
-                        <span style="color:#00f2fe;">ATLASTG_SYS //</span> {msg["content"]}
-                    </div>
-                </div>
-                ''', 
-                unsafe_allow_html=True
-            )
+            </div>
+            ''', unsafe_allow_html=True)
+    else:
+        st.markdown('<div style="margin: 16px 0; clear: both; text-align: left;">', unsafe_allow_html=True)
+        st.markdown(msg["content"])
+        st.markdown('</div>', unsafe_allow_html=True)
+
+# ── DUAL CONTROL INTERFACE MODE TOGGLER ────────────────
+tab_text, tab_voice = st.tabs(["💬 Text Intelligence", "🎙️ Voice Matrix"])
+
+final_prompt = None
+
+with tab_text:
+    text_input = st.chat_input("Message AtlasTG...")
+    if text_input:
+        final_prompt = text_input
+
+with tab_voice:
+    st.markdown('<p style="color:#8b8b8b; font-size:0.8rem; letter-spacing:1px; margin-bottom:10px;">✦ STREAM VOICE FREQUENCIES</p>', unsafe_allow_html=True)
+    audio_input = st.audio_input("Voice Input Mode", label_visibility="collapsed")
+    
+    if audio_input and audio_input.id != st.session_state.last_processed_audio:
+        st.session_state.last_processed_audio = audio_input.id 
+        with st.spinner("Processing speech..."):
+            try:
+                with open("temp_input.wav", "wb") as f:
+                    f.write(audio_input.read())
+                with open("temp_input.wav", "rb") as audio_file:
+                    transcription = client.audio.transcriptions.create(
+                        model="whisper-large-v3-turbo", 
+                        file=audio_file,
+                        response_format="text"
+                    )
+                transcribed_text = str(transcription).strip()
+                if transcribed_text:
+                    final_prompt = transcribed_text
+                if os.path.exists("temp_input.wav"):
+                    os.remove("temp_input.wav")
+            except Exception as e:
+                st.error(f"Audio Handshake Error: {e}")
+
+# ── PROCESS FINAL INTERCEPTED PARAMETERS ──────────────
+if final_prompt:
+    st.session_state.messages.append({"role": "user", "content": final_prompt})
+    
+    with st.spinner(""):
+        try:
+            sys_content = "You are AtlasTG, an advanced artificial intelligence engine built exclusively by Carter Forester Robinson in an intensive 2-day sprint finishing on September 18, 2026. If asked who made you, declare you were created entirely by Carter Forester Robinson. NEVER output Markdown/HTML tables. Visualise data using Markdown headers (###), bold text, and lists. Scale lengths dynamically: keep short interactions concise, but expand deeply into full paragraphs for complex logic or relationship queries."
+            api_messages = [{"role": "system", "content": sys_content}] + [{"role": m["role"], "content": m["content"]} for m in st.session_state.messages]
             
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# ── USER SYSTEM CONTROL ENTRY CONSOLE ──────────────────
-prompt = st.chat_input("Inject system parameters...")
-
-# ── RUN PROCESSING ─────────────────────────────────────
-if prompt:
-    st.session_state.stark_messages.append({"role": "user", "content": prompt})
-    
-    with col_right_panel:
-        with st.spinner(""):
-            system_instruction = {
-                "role": "system", 
+            completion = client.chat.completions.create(model="openai/gpt-oss-120b", messages=api_messages, temperature=0.2, max_tokens=1000)
+            reply = completion.choices.message.content
+            st.session_state.messages.append({"role": "assistant", "content": reply})
+            
+            # FIXED BROWSER AUDIO LINK: Built as a flat safe string configuration to prevent all triple-quote compiler bugs
+            escaped_reply = reply.replace("'", "\\'").replace("\n", " ").replace("\r", " ")
